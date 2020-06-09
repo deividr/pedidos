@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.springframework.org/schema/security"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans
+                       http://www.springframework.org/schema/beans/spring-beans.xsd
+                       http://www.springframework.org/schema/security
+                       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <b:bean id="appUserDetailService" class="br.com.labuonapasta.security.AppUserDetailsService"/>
+    <b:bean id="successHandler" class="br.com.labuonapasta.security.OurSuccessHandler"/>
+
+    <http pattern="/javax.faces.resource/**" security="none"/>
+    <http pattern="/resources/**" security="none"/>
+    <http pattern="/Login.xhtml" security="none"/>
+    <!--<http pattern="/pedidos/m_*" security="none"/>-->
+
+    <http use-expressions="true">
+        <intercept-url pattern="/Home.xhtml"
+                       access="hasAnyAuthority('PEDIDO', 'CADASTRO', 'ADMINISTRADOR')"/>
+        <intercept-url pattern="/pedidos/**"
+                       access="hasAnyAuthority('PEDIDO', 'CADASTRO', 'ADMINISTRADOR')"/>
+        <intercept-url pattern="/clientes/**"
+                       access="hasAnyAuthority('CADASTRO', 'ADMINISTRADOR')"/>
+        <intercept-url pattern="/produtos/**"
+                       access="hasAnyAuthority('CADASTRO', 'ADMINISTRADOR')"/>
+        <intercept-url pattern="/funcionarios/**"
+                       access="hasAnyAuthority('ADMINISTRADOR')"/>
+        <intercept-url pattern="/usuarios/**"
+                       access="hasAnyAuthority('ADMINISTRADOR')"/>
+        <form-login login-page="/Login.xhtml" authentication-success-handler-ref="successHandler"
+                    username-parameter="login" password-parameter="senha"/>
+        <logout delete-cookies="true" invalidate-session="true" logout-success-url="/Login.xhtml" />
+        <csrf disabled="true"/>
+    </http>
+
+    <authentication-manager>
+        <authentication-provider user-service-ref="appUserDetailService">
+            <password-encoder hash="bcrypt"/>
+        </authentication-provider>
+    </authentication-manager>
+
+</b:beans>

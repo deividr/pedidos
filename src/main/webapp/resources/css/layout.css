@@ -1,0 +1,75 @@
+/* TOPBAR */
+.lb-topbar {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	min-height: 50px;
+	z-index: 9999;
+	background-color: #4CAF50;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0
+		rgba(0, 0, 0, 0.12) !important;
+}
+
+.lb-topbar > table {
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.lb-logo {
+	font-family: "Dancing Script", cursive;
+	font-size: 25px !important;
+	color: #ffffff;
+	text-shadow: 1px 1px 0 #444;
+}
+
+/* SIDEBAR */
+.lb-sidebar {
+	position: fixed;
+	top: 50px;
+	bottom: 0;
+	left: 0;
+	width: 210px;
+	margin-left: -211px;
+	z-index: 9998;
+	transition: margin-left 0.5s;
+	overflow-y: auto;
+	background-color: #f6f6f6;
+	border-right: 1px solid #eaeaea;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0
+		rgba(0, 0, 0, 0.12) !important;
+}
+
+.lb-sidebar.is-toggled {
+	margin-left: 0px;
+}
+
+@media ( min-width : 960px) {
+	.lb-sidebar {
+		margin-left: 0px;
+	}
+	.lb-sidebar.is-toggled {
+		margin-left: -211px;
+	}
+}
+
+.lb-menu i {
+	width: 20px;
+	text-align: center;
+}
+
+/* CONTENT */
+.lb-content {
+	padding: 0 15px;
+	margin-top: 50px;
+	transition: margin-left 0.5s;
+}
+
+@media ( min-width : 960px) {
+	.lb-content {
+		margin-left: 210px;
+	}
+	.lb-content.is-toggled {
+		margin-left: 0;
+	}
+}

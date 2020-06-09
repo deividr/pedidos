@@ -1,0 +1,90 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="script">
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#menu_home").addClass("is-selected");
+			});
+		</script>
+	</ui:define>
+
+	<ui:define name="content">
+		<h1 class="lb-page-title">
+			Olá, Seja bem-vindo ao Sistema de Pedidos
+			<p:ajaxStatus style="float: right;">
+				<f:facet name="start">
+					<p:graphicImage library="imagens" name="loading.gif" style="width: 40px;" />
+				</f:facet>
+			</p:ajaxStatus>
+		</h1>
+
+		<h:form id="form" prependId="false">
+			<!-- Toolbar principal -->
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Filtrar" update="tblProdutos msgGeral" action="#{homeView.init}"
+						oncomplete="PF('tblProdutos').clearFilters()" />
+				</f:facet>
+			</p:toolbar>
+
+			<br />
+
+			<p:messages id="msgGeral" style="margin: 5px 0" showDetail="true" showSummary="false" closable="true" />
+
+			<div class="ui-fluid" style="margin: 10px 0">
+				<p:panel id="pnlFiltros" widgetVar="pnlFiltros" header="Filtrar Período" toggleable="true">
+					<p:panelGrid layout="grid" styleClass="ui-noborder" columns="2"
+						columnClasses="ui-grid-col-2, ui-grid-col-10" style="max-width: 500px">
+						<h:outputLabel value="Período" for="dataInicial" />
+						<p:columnGroup>
+							<p:calendar id="dataInicial" label="Data inicial" pattern="dd/MM/yyyy"
+								styleClass="lb-calendar" showOn="button" mask="true" value="#{homeView.dataInicio}"
+								required="true" requiredMessage="Data inicio é obrigatória" />
+							<span style="margin-right: 5px; margin-left: 5px"> até </span>
+							<p:calendar id="dataFinal" label="Data final" pattern="dd/MM/yyyy" styleClass="lb-calendar"
+								showOn="button" mask="true" value="#{homeView.dataFim}" required="true"
+								requiredMessage="Data fim é obrigatória" />
+						</p:columnGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+
+			<br />
+
+			<p:dataTable id="tblProdutos" var="produto" value="#{homeView.produtosQuantidades}"
+				widgetVar="tblProdutos" rows="10" paginator="true" reflow="true"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+                                            {PageLinks} {NextPageLink} {LastPageLink}"
+				emptyMessage="Nenhum pedido encontrado" rowKey="#{produto.produto.prodId}"
+				sortBy="#{produto.produto.nome}" filteredValue="#{homeView.filteredProdutos}">
+
+				<f:facet name="header">
+					<p:outputPanel style="text-align: right">
+						<h:outputText value="Pesquisar: " />
+						<p:inputText id="globalFilter" onkeyup="PF('tblProdutos').filter()" style="width:150px"
+							placeholder="Produto" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:column headerText="Produto" sortBy="#{produto.produto.nome}" filterMatchMode="contains"
+					filterBy="#{produto.produto.nome}" filterStyle="display: none">
+					<h:outputText value="#{produto.produto.nome}" />
+				</p:column>
+
+				<p:column headerText="Quantidade" sortBy="#{produto.quantidade}" filterMatchMode="contains"
+					filterBy="#{produto.quantidade}" filterStyle="display: none" width="100">
+					<h:outputText value="#{produto.quantidade}">
+						<f:convertNumber type="currency" pattern="#0.000" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Unidade" sortBy="#{produto.produto.unidade}" width="100">
+					<h:outputText value="#{produto.produto.unidade}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pm="http://primefaces.org/mobile">
+
+<f:view renderKitId="PRIMEFACES_MOBILE"/>
+
+<h:head> </h:head>
+
+<h:body>
+    <!-- Campo para identificar qual page será ativada -->
+    <h:outputLabel id="pagina" value="#{param.pagina}" style="display: none"/>
+
+    <!-- ///////////// Pagina para informacoes da filtragem. //////////////////// -->
+    <pm:page id="filtro">
+        <h:form prependId="false">
+            <pm:header title="Pedidos" swatch="b">
+                <f:facet name="left">
+                    <p:commandButton id="btn_home" type="button" icon="ui-icon-home"/>
+                    <p:button value="Novo" icon="ui-icon-plus" outcome="m_manutencaopedido"/>
+                </f:facet>
+            </pm:header>
+
+            <p:overlayPanel for="btn_home" at="left" showEffect="overlay">
+                <h2>Menu</h2>
+                <p:menu>
+                    <p:menuitem value="Inicio" url="/Home.xhtml"/>
+                    <p:menuitem value="Pedidos" url="/pedidos/m_listarpedidos.xhtml"/>
+                </p:menu>
+            </p:overlayPanel>
+        </h:form>
+
+        <pm:content>
+            <h:form id="filtroForm">
+                <pm:field>
+                    <p:outputLabel value="Data Inicial" for="dataInicial"/>
+                    <p:calendar id="dataInicial" value="#{pedidoView.pedidoFilter.dataInicial}"
+                            pattern="dd/MM/yyyy"/>
+                </pm:field>
+
+                <pm:field>
+                    <p:outputLabel value="Data Final" for="dataFinal"/>
+                    <p:calendar id="dataFinal" value="#{pedidoView.pedidoFilter.dataFinal}" pattern="dd/MM/yyyy"/>
+                </pm:field>
+
+                <pm:field>
+                    <p:outputLabel value="Produto" for="produto"/>
+                    <p:autoComplete id="produto" var="produto" value="#{pedidoView.pedidoFilter.produto}"
+                            itemLabel="#{produto.nome}" itemValue="#{produto}" forceSelection="true"
+                            placeholder="Produto" completeMethod="#{pedidoView.obterProdutos}"/>
+                </pm:field>
+
+                <p:commandButton value="Filtrar" action="#{pedidoView.filtrarListaMobile}" icon="ui-icon-search"
+                        update="lista:pedidosList"/>
+            </h:form>
+        </pm:content>
+    </pm:page>
+
+    <!-- ///////////////////// Pagina para listar Pedidos. //////////////////////////// -->
+    <pm:page id="lista">
+        <pm:header title="Pedidos" swatch="b">
+            <p:button value="Voltar" icon="ui-icon-carat-l" outcome="pm:filtro?transition=flip"/>
+            <p:button value="Novo" icon="ui-icon-plus" outcome="m_manutencaopedido"/>
+        </pm:header>
+
+        <pm:content>
+            <p:messages id="msgList" autoUpdate="true"/>
+            <h:form id="listaForm" prependId="false">
+                <p:dataList id="pedidosList" value="#{pedidoView.pedidos}" var="pedido" pt:data-filter="true"
+                        pt:data-inset="true" emptyMessage="Não há pedidos para listar.">
+                    <p:column filterBy="#{pedido.numeroPedido} #{pedido.cliente.nome} #{pedido.cliente.telefone1}"
+                            filterMatchMode="contains">
+                        <h:link outcome="m_detalharpedido">
+                            <h:outputText value="#{pedido.numeroPedido} - #{pedido.cliente.nome}"/>
+                            <p>
+                                <h:outputText value="Telefone: #{pedido.cliente.telefone1}"
+                                        converter="telefoneConverter"/>
+                            </p>
+                            <f:param name="pedido" value="#{pedido.pedId}"/>
+                        </h:link>
+                    </p:column>
+                </p:dataList>
+            </h:form>
+        </pm:content>
+    </pm:page>
+    <script>
+        $(document).ready(function () {
+            if ($("#pagina").html() == "lista") {
+                PrimeFaces.Mobile.navigate("#lista", {});
+            }
+            $("#pagina").html("");
+        })
+    </script>
+</h:body>
+</html>

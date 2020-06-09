@@ -1,0 +1,219 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="script">
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#menu_produtos").addClass("is-selected");
+			});
+
+			function handleInsertRequest(xhr, status, args, dialog) {
+				if (args.validationFailed) {
+					PF(dialog).jq.effect("shake", {
+						times : 5
+					}, 100);
+				} else {
+					PF(dialog).hide();
+					PF('produtoTable').clearFilters();
+				}
+			}
+		</script>
+	</ui:define>
+
+	<ui:define name="content">
+		<h1 class="lb-page-title">Cadastro de Produtos</h1>
+
+		<!--Toolbar principal-->
+		<h:form id="frmToolbar" prependId="false">
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="fa fa-plus" onclick="PF('dlgNovoProduto').show()" />
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<p:messages id="msgGeral" for="msgGeral" showDetail="true" showSummary="false" closable="true" />
+		</h:form>
+
+		<br />
+
+		<!--Fomulário para Novo Produto-->
+		<h:form id="frmNovoProduto" prependId="false">
+			<p:dialog header="Novo Produto" id="dlgNovoProduto" widgetVar="dlgNovoProduto" modal="true"
+				responsive="true" resizable="false" closable="false" style="min-width: 300px">
+
+				<f:facet name="header">
+					<div style="text-align: center">
+						<h:outputLabel value="Novo Produto" style="font-size: 1em" />
+					</div>
+					<p:ajaxStatus style="float: right; margin-left: 50px">
+						<f:facet name="start">
+							<p:graphicImage library="imagens" name="loading.gif" style="width: 30px;" />
+						</f:facet>
+					</p:ajaxStatus>
+				</f:facet>
+
+				<p:messages showSummary="true" showDetail="false" autoUpdate="true" closable="false" />
+
+				<div class="ui-fluid">
+					<p:panelGrid id="pnlNovoProduto" columns="2" layout="grid" styleClass="ui-noborder"
+						columnClasses="ui-grid-col-3, ui-grid-col-9">
+
+						<h:outputLabel for="nome" value="Nome:" />
+						<p:inputText id="nome" maxlength="40" value="#{produtoView.novoProduto.nome}" />
+
+						<h:outputLabel for="unidade" value="Unidade:" />
+						<p:selectOneButton id="unidade" value="#{produtoView.novoProduto.unidade}">
+							<f:selectItems value="#{produtoView.tiposDeUnidade}" var="tipoUnidade"
+								itemLabel="#{tipoUnidade.codigo}" />
+						</p:selectOneButton>
+
+						<h:outputLabel for="valor" value="Valor:" />
+						<p:inputNumber value="#{produtoView.novoProduto.valor}" id="valor" decimalSeparator=","
+							thousandSeparator="." converter="javax.faces.BigDecimal" />
+
+						<h:outputLabel for="tipo" value="Tipo:" />
+						<p:selectOneMenu id="tipo" value="#{produtoView.novoProduto.tipo}">
+							<f:selectItems value="#{produtoView.tiposDeProduto}" var="tipoProduto"
+								itemLabel="#{tipoProduto.descricao}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel />
+						<p:commandButton value="Incluir" icon="fa fa-plus" action="#{produtoView.incluirProduto()}"
+							oncomplete="handleInsertRequest(xhr, status, args, 'dlgNovoProduto')"
+							update="tblProdutos pnlNovoProduto msgGeral" />
+
+						<h:outputLabel />
+						<p:commandLink value="Cancelar" style="float: right; margin-top: 10px;" process="@this"
+							update="frmNovoProduto msgGeral" resetValues="true" onclick="PF('dlgNovoProduto').hide()" />
+
+					</p:panelGrid>
+				</div>
+			</p:dialog>
+		</h:form>
+
+		<!--Fomulário para Alterar Produto-->
+		<h:form id="frmAlterarProduto" prependId="false">
+			<p:dialog header="Alterar Produto #{produtoView.selectedProduto.nome}" id="dlgAlterarProduto"
+				widgetVar="dlgAlterarProduto" modal="true" resizable="false" closable="false" responsive="true"
+				style="min-width: 300px; max-width: 450px">
+
+				<f:facet name="header">
+					<h:outputLabel value="Alterar Produto #{produtoView.selectedProduto.nome}"
+						style="font-size: 1em" />
+					<p:ajaxStatus style="float: right; margin-left: 50px">
+						<f:facet name="start">
+							<p:graphicImage library="imagens" name="loading.gif" style="width: 30px;" />
+						</f:facet>
+					</p:ajaxStatus>
+				</f:facet>
+
+				<p:messages showSummary="true" showDetail="false" autoUpdate="true" closable="false" />
+
+				<div class="ui-fluid">
+					<p:panelGrid id="pnlAlterarProduto" columns="2" layout="grid" styleClass="ui-noborder"
+						columnClasses="ui-grid-col-3, ui-grid-col-9">
+
+						<h:outputLabel for="alterNome" value="Nome:" />
+						<p:inputText id="alterNome" maxlength="40" label="Nome"
+							value="#{produtoView.selectedProduto.nome}" />
+
+						<h:outputLabel for="alterUnidade" value="Unidade:" />
+						<p:selectOneButton id="alterUnidade" label="Unidade"
+							value="#{produtoView.selectedProduto.unidade}">
+							<f:selectItems value="#{produtoView.tiposDeUnidade}" var="tipoUnidade"
+								itemLabel="#{tipoUnidade.codigo}" />
+						</p:selectOneButton>
+
+						<h:outputLabel for="alterValor" value="Valor:" />
+						<p:inputNumber value="#{produtoView.selectedProduto.valor}" id="alterValor" label="Valor"
+							decimalSeparator="," thousandSeparator="." converter="javax.faces.BigDecimal" />
+
+						<h:outputLabel for="alterTipo" value="Tipo:" />
+						<p:selectOneMenu id="alterTipo" label="Tipo" value="#{produtoView.selectedProduto.tipo}">
+							<f:selectItems value="#{produtoView.tiposDeProduto}" var="tipoProduto"
+								itemLabel="#{tipoProduto.descricao}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel />
+						<p:commandButton value="Salvar" icon="fa fa-save" action="#{produtoView.alterarProduto()}"
+							oncomplete="handleInsertRequest(xhr, status, args, 'dlgAlterarProduto')"
+							update="tblProdutos pnlAlterarProduto msgGeral" />
+
+						<h:outputLabel />
+						<p:commandLink value="Cancelar" style="float: right; margin-top: 10px;" process="@this"
+							action="#{produtoView.refreshProduto}" onclick="PF('dlgAlterarProduto').hide()"
+							update="tblProdutos frmAlterarProduto msgGeral" resetValues="true" />
+					</p:panelGrid>
+				</div>
+			</p:dialog>
+		</h:form>
+
+		<!--Lista de todos os usários cadastrados na base-->
+		<h:form id="frmLista" prependId="false">
+			<p:dataTable id="tblProdutos" var="produto" value="#{produtoView.produtos}" reflow="true"
+				widgetVar="produtoTable" rows="10" paginator="true"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+                                            {PageLinks} {NextPageLink} {LastPageLink}"
+				rowKey="#{produto.prodId}" emptyMessage="Nenhum produto encontrado"
+				filteredValue="#{produtoView.filteredProdutos}" sortBy="#{produto.nome}">
+
+				<f:facet name="header">
+					<p:outputPanel style="text-align: right">
+						<h:outputText value="Pesquisar: " />
+						<p:inputText id="globalFilter" onkeyup="PF('produtoTable').filter()" style="width:150px"
+							placeholder="Produto" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:column headerText="Nome" sortBy="#{produto.nome}" filterMatchMode="contains"
+					filterBy="#{produto.nome}" filterStyle="display: none">
+					<h:outputText value="#{produto.nome}" />
+				</p:column>
+
+				<p:column headerText="Unidade" sortBy="#{produto.unidade.descricao}" filterMatchMode="contains"
+					filterBy="#{produto.unidade.descricao}" filterStyle="display: none" width="100">
+					<h:outputText value="#{produto.unidade.descricao}" />
+				</p:column>
+
+				<p:column headerText="Valor (R$)" sortBy="#{produto.valor}" filterMatchMode="contains"
+					filterBy="#{produto.valor}" filterStyle="display: none" width="100">
+					<h:outputText value="#{produto.valor}">
+						<f:convertNumber type="currency" pattern="#,###,###,##0.00" locale="pt_BR" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Tipo" sortBy="#{produto.tipo.descricao}"
+					filterBy="#{produto.tipo.descricao}" filterStyle="display: none" width="100">
+					<h:outputText value="#{produto.tipo.descricao}" />
+				</p:column>
+
+				<p:column width="75">
+					<p:commandButton icon="fa fa-pencil-square-o" process="@this"
+						oncomplete="PF('dlgAlterarProduto').show()" update="dlgAlterarProduto">
+						<f:setPropertyActionListener value="#{produto}" target="#{produtoView.selectedProduto}" />
+					</p:commandButton>
+					<p:commandButton icon="fa fa-trash-o" process="@this"
+						oncomplete="PF('confirmarExclusao').show()" update="confirmarExclusao">
+						<f:setPropertyActionListener value="#{produto}" target="#{produtoView.selectedProduto}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<!--Dialog para confirmação da exclusão do produto.-->
+			<p:confirmDialog id="confirmarExclusao" header="Exclusão de Produto"
+				message="Confirma exclusão do produto #{produtoView.selectedProduto.nome}?"
+				widgetVar="confirmarExclusao" closable="false">
+				<div align="right">
+					<p:commandButton value="Não" process="@this" update="msgGeral"
+						onclick="PF('confirmarExclusao').hide()" />
+					<p:commandButton value="Sim" update="frmLista tblProdutos msgGeral" process="@this"
+						action="#{produtoView.excluirProduto()}"
+						oncomplete="PF('confirmarExclusao').hide();
+                                     PF('produtoTable').clearFilters()" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

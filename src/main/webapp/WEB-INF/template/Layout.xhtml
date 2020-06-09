@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <f:facet name="first">
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </f:facet>
+
+    <title>La Buonapasta</title>
+
+    <!-- Fonte para o nome da Empresa-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing+Script"/>
+
+    <!--Icones Awesome-->
+    <link rel="stylesheet"
+          href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+    <h:outputStylesheet library="css" name="custom.css"/>
+    <h:outputStylesheet library="css" name="layout.css"/>
+    <h:outputStylesheet library="css" name="components.css"/>
+
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <h:outputScript library="javascripts" name="app.js"/>
+
+    <ui:insert name="script"/>
+
+</h:head>
+
+<h:body>
+
+    <header class="lb-topbar">
+        <table style="float: left;">
+            <tr>
+                <td>
+                    <h:graphicImage library="imagens" name="brasao_login.png" style="width: 30px"/>
+                </td>
+                <td>
+                    <h:outputLabel styleClass="lb-logo"> La Buonapasta </h:outputLabel>
+                </td>
+            </tr>
+        </table>
+        <a href="#" class="lb-toggle js-toggle"><i class="fa fa-lg fa-bars"/></a>
+        <a href="#" class="lb-user-display js-toggle-menu-user">
+            <span>#{request.remoteUser}  </span>
+            <h:graphicImage library="imagens" name="user.png"/>
+        </a>
+        <ul class="lb-user-menu">
+            <li>
+                <a href="#{request.contextPath}/usuarios/AlterarSenha.xhtml">
+                    <i class="fa fa-lg fa-key"/>
+                    <span>Mudar Senha</span>
+                </a>
+            </li>
+            <li>
+                <a href="#{request.contextPath}/logout">
+                    <i class="fa fa-lg fa-sign-out"/>
+                    <span>Sair</span>
+                </a>
+            </li>
+        </ul>
+    </header>
+
+    <aside class="lb-sidebar js-sidebar">
+        <ui:include src="Menu.xhtml"/>
+    </aside>
+
+    <section class="lb-content js-content">
+        <ui:insert name="content"/>
+    </section>
+
+</h:body>
+
+</html>

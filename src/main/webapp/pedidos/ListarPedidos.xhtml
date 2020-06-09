@@ -1,0 +1,198 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<ui:define name="script">
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#menu_pedidos").addClass("is-selected");
+			});
+			function testar() {
+				console.log($("#imprimirTexto").text());
+			}
+		</script>
+	</ui:define>
+
+	<ui:define name="content">
+		<div>
+			<h1 class="lb-page-title">
+				Cadastro de Pedidos
+				<p:ajaxStatus style="float: right;">
+					<f:facet name="start">
+						<p:graphicImage library="imagens" name="loading.gif"
+							style="width: 40px;" />
+					</f:facet>
+				</p:ajaxStatus>
+			</h1>
+			<h:form prependId="false">
+				<h:commandLink value="Versão Mobile" action="m_listarpedidos"
+					style="float: right;" />
+				<br />
+			</h:form>
+		</div>
+
+		<h:form id="form" prependId="false">
+			<!-- Toolbar principal -->
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button value="Novo" icon="fa fa-plus"
+						outcome="/pedidos/ManutencaoPedido" />
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+					<p:commandButton value="Filtrar" update="tblPedidos msgGeral"
+						action="#{pedidoView.filtrarLista}"
+						oncomplete="PF('pedidoTable').clearFilters()" />
+					<span class="ui-separator" />
+					<p:commandButton value="Limpar Filtro"
+						update="tblPedidos msgGeral pnlFiltros imprimirTexto"
+						action="#{pedidoView.limparFiltros}"
+						oncomplete="PF('pedidoTable').clearFilters();testar()" />
+					<span class="ui-separator" />
+					<h:commandLink>
+						<p:button icon="fa fa-md fa-file-excel-o" title="Emitir Relatório" />
+						<p:dataExporter type="xls"
+							postProcessor="#{pedidoView.emitirRelatorio}" target="tblPedidos"
+							fileName="relatorio" />
+					</h:commandLink>
+				</f:facet>
+			</p:toolbar>
+
+			<p:messages id="msgGeral" style="margin: 5px 0" showDetail="true"
+				showSummary="false" closable="true" />
+
+			<div class="ui-fluid" style="margin: 10px 0">
+				<p:panel id="pnlFiltros" widgetVar="pnlFiltros"
+					header="Filtrar pedidos" toggleable="true">
+					<p:panelGrid layout="grid" styleClass="ui-noborder" columns="2"
+						columnClasses="ui-grid-col-2, ui-grid-col-10">
+						<h:outputLabel value="Período" for="dataInicial" />
+						<p:columnGroup>
+							<p:calendar id="dataInicial" label="Data inicial"
+								pattern="dd/MM/yyyy" styleClass="lb-calendar" showOn="button"
+								mask="true" value="#{pedidoView.pedidoFilter.dataInicial}" />
+							<span style="margin-right: 5px; margin-left: 5px"> até </span>
+							<p:calendar id="dataFinal" label="Data final"
+								pattern="dd/MM/yyyy" styleClass="lb-calendar" showOn="button"
+								mask="true" value="#{pedidoView.pedidoFilter.dataFinal}" />
+						</p:columnGroup>
+
+						<h:outputLabel value="Geladeira" for="geladeira" />
+						<p:inputText id="geladeira" label="Geladeira" maxlength="3"
+							style="width: 50px" value="#{pedidoView.pedidoFilter.geladeira}" />
+
+						<h:outputLabel value="Produto" for="produto" />
+						<p:autoComplete id="produto" label="Produto" var="produto"
+							value="#{pedidoView.pedidoFilter.produto}"
+							itemLabel="#{produto.nome}" itemValue="#{produto}"
+							forceSelection="true" style="max-width: 300px"
+							completeMethod="#{pedidoView.obterProdutos}" />
+					</p:panelGrid>
+				</p:panel>
+			</div>
+
+			<p:dataTable id="tblPedidos" var="pedido"
+				value="#{pedidoView.pedidos}" reflow="true" widgetVar="pedidoTable"
+				rows="10" paginator="true" editable="true" editMode="cell"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+                         {PageLinks} {NextPageLink} {LastPageLink}"
+				rowKey="#{pedido.pedId}" emptyMessage="Nenhum pedido encontrado"
+				filteredValue="#{pedidoView.filteredPedidos}"
+				sortBy="#{pedido.numeroPedido}">
+				
+				<f:facet name="header">
+					<p:outputPanel style="text-align: right">
+						<h:outputText value="Pesquisar " />
+						<p:inputText id="globalFilter"
+							onkeyup="PF('pedidoTable').filter()" style="width:150px"
+							placeholder="Pedido" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:ajax event="cellEdit" listener="#{pedidoView.onCellEdit}"
+					update="tblPedidos" />
+
+				<p:column headerText="Num." sortBy="#{pedido.numeroPedido}"
+					filterMatchMode="contains" filterBy="#{pedido.numeroPedido}"
+					filterStyle="display: none" width="50">
+					<h:outputText value="#{pedido.numeroPedido}"
+						style="max-width: 50px" />
+				</p:column>
+
+				<p:column headerText="Cliente" sortBy="#{pedido.cliente.nome}"
+					filterMatchMode="contains" filterBy="#{pedido.cliente.nome}"
+					filterStyle="display: none" width="300">
+					<h:outputText value="#{pedido.cliente.nome}" />
+				</p:column>
+
+				<p:column headerText="Telefone" sortBy="#{pedido.cliente.telefone1}"
+					filterMatchMode="contains" filterBy="#{pedido.cliente.telefone1}"
+					filterStyle="display: none" width="100">
+					<h:outputText value="#{pedido.cliente.telefone1}"
+						converter="telefoneConverter" />
+				</p:column>
+
+				<p:column headerText="Retirada" sortBy="#{pedido.dataRetirada}"
+					filterBy="#{pedido.dataRetirada}" filterStyle="display: none"
+					width="80">
+					<h:outputText value="#{pedido.dataRetirada}">
+						<f:convertDateTime pattern="dd/MMM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="De" width="30">
+					<h:outputText value="#{pedido.horaDe}" />
+				</p:column>
+
+				<p:column headerText="Até" width="30">
+					<h:outputText value="#{pedido.horaAte}" />
+				</p:column>
+
+				<p:column headerText="Geladeira" width="60"
+					sortBy="#{pedido.geladeira}" filterBy="#{pedido.geladeira}"
+					filterStyle="display: none">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText value="#{pedido.geladeira}" />
+						</f:facet>
+						<f:facet name="input">
+							<h:inputText value="#{pedido.geladeira}" maxlength="3"/>
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+
+				<p:column width="70">
+					<p:button outcome="/pedidos/DetalharPedido" icon="fa fa-search">
+						<f:param name="pedido" value="#{pedido.pedId}" />
+					</p:button>
+					<p:commandButton icon="fa fa-trash-o" process="@this"
+						oncomplete="PF('confirmarExclusao').show()"
+						update="confirmarExclusao">
+						<f:setPropertyActionListener value="#{pedido}"
+							target="#{pedidoView.selectedPedido}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:inputTextarea id="imprimirTexto" value="#{pedidoView.imprimir}"
+				style="display: none" />
+
+			<!-- Dialog para confirmação da exclusão do pedido. -->
+			<p:confirmDialog id="confirmarExclusao" header="Exclusão de Pedido"
+				message="Confirma exclusão do pedido #{pedidoView.selectedPedido.numeroPedido}?"
+				widgetVar="confirmarExclusao" closable="false">
+				<div align="right">
+					<p:commandButton value="Não" process="@this"
+						onclick="PF('confirmarExclusao').hide();
+                                             return false" />
+					<p:commandButton value="Sim" update="tblPedidos" process="@this"
+						oncomplete="PF('confirmarExclusao').hide();
+                                     PF('pedidoTable').clearFilters()"
+						action="#{pedidoView.excluirPedido()}" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

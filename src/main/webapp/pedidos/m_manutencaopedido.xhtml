@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pm="http://primefaces.org/mobile"
+        xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+<f:view renderKitId="PRIMEFACES_MOBILE"/>
+
+<h:head> </h:head>
+
+<h:body>
+    <!-- ///////////////////// Pagina para Incluir ou Alterar Pedido. //////////////////////////// -->
+    <pm:page id="details">
+        <h:form prependId="false">
+            <pm:header title="#{cadastroPedidoView.pedido.pedId ne 0 ? 'Alterar Pedido' : 'Incluir Pedido'}" swatch="b">
+                <p:button value="Cancelar" icon="ui-icon-carat-l" rendered="#{cadastroPedidoView.pedido.pedId eq 0}"
+                        outcome="m_listarpedidos?faces-redirect=true&amp;pagina=lista"/>
+                <p:button value="Cancelar" icon="ui-icon-carat-l" rendered="#{cadastroPedidoView.pedido.pedId ne 0}"
+                        outcome="m_detalharpedido?faces-redirect=true&amp;pedido=#{param.pedido}"/>
+                <p:commandButton value="Incluir" icon="ui-icon-plus" process="@this, :details:detailForm"
+                        oncomplete="if (!args.validationFailed) PF('dlgInclusao').show()"
+                        rendered="#{cadastroPedidoView.pedido.pedId eq 0}" action="#{cadastroPedidoView.incluir}"
+                        update="details:pedidoMessages details:dlgInclusao" partialSubmit="true"/>
+                <p:commandButton value="Alterar" icon="ui-icon-edit" onclick="PF('dlgAlteracao').show();"
+                        rendered="#{cadastroPedidoView.pedido.pedId ne 0}"/>
+            </pm:header>
+        </h:form>
+
+        <pm:content>
+            <h:form id="detailForm" prependId="false">
+                <p:dialog header="Inclusão" id="dlgInclusao" widgetVar="dlgInclusao" showEffect="pop">
+                    <h:outputText value="Pedido #{cadastroPedidoView.numeroPedido} incluído com sucesso!"/>
+                    <p:commandButton value="OK" action="m_listarpedidos?faces-redirect=true"/>
+                </p:dialog>
+                <p:dialog header="Confirmar" widgetVar="dlgAlteracao" showEffect="pop">
+                    <h:outputText value="Confirma alteração do pedido #{cadastroPedidoView.pedido.numeroPedido}?"/>
+                    <p:commandButton value="Não" onclick="PF('dlgAlteracao').hide()"/>
+                    <p:commandButton value="Sim" action="#{cadastroPedidoView.alterarMobile}"/>
+                </p:dialog>
+                <p:messages id="pedidoMessages"/>
+                <p:accordionPanel>
+                    <p:tab title="Cliente">
+                        <pm:field>
+                            <p:focus for="telefone"/>
+                            <p:outputLabel value="Telefone"/>
+                            <p:inputText id="telefone" label="Telefone" type="tel" converter="telefoneConverter"
+                                    value="#{cadastroPedidoView.pedido.cliente.telefone1}">
+                                <p:ajax event="change" process="@this" listener="#{cadastroPedidoView.obterCliente}"
+                                        update="cliente"/>
+                            </p:inputText>
+                        </pm:field>
+                        <pm:field>
+                            <p:outputLabel value="Nome"/>
+                            <p:inputText id="cliente" label="Cliente"
+                                    value="#{cadastroPedidoView.pedido.cliente.nome}"/>
+                        </pm:field>
+                    </p:tab>
+                    <p:tab title="Pedido">
+                        <pm:field>
+                            <p:outputLabel value="Retirada"/>
+                            <p:calendar id="retirada" label="Data de Retirada" mask="true" pattern="dd/MM/yyyy"
+                                    value="#{cadastroPedidoView.pedido.dataRetirada}"/>
+                        </pm:field>
+                        <pm:field>
+                            <p:outputLabel value="Horário"/>
+                            <p:inputText type="time" pt:data-clear-btn="true"
+                                    value="#{cadastroPedidoView.pedido.horaDe}"/>
+                            <span> até </span>
+                            <p:inputText type="time" pt:data-clear-btn="true"
+                                    value="#{cadastroPedidoView.pedido.horaAte}"/>
+                        </pm:field>
+                        <pm:field>
+                            <p:outputLabel value="Geladeira"/>
+                            <p:inputText type="text" value="#{cadastroPedidoView.pedido.geladeira}"/>
+                        </pm:field>
+                        <pm:field>
+                            <p:outputLabel value="Observações"/>
+                            <p:inputTextarea id="observacoes" type="textarea" maxlength="200"
+                                    value="#{cadastroPedidoView.pedido.observacao}"/>
+                        </pm:field>
+                    </p:tab>
+                    <p:tab title="Itens">
+                        <p:dataList id="itensList" value="#{cadastroPedidoView.pedido.itens}" var="item"
+                                pt:data-inset="true" emptyMessage="Não há itens para listar.">
+                            <p:ajax event="swiperight" listener="#{cadastroPedidoView.onRowSwipeRight}"
+                                    update="@this"/>
+                            <p:column>
+                                <h:outputLink value="#">
+                                    <p:outputLabel value="#{item.qtde} #{item.produto.unidade.codigo.toLowerCase()}"/>
+                                    <p:outputLabel value="#{item.produto.nome} #{item.molho.nome}"/>
+                                </h:outputLink>
+                            </p:column>
+                        </p:dataList>
+                        <p:commandButton value="Adicionar Item" icon="ui-icon-plus" action="pm:novo_item_tipo"
+                                update="observacoes"/>
+                    </p:tab>
+                </p:accordionPanel>
+                <pm:field>
+                    <p:outputLabel value="Imprimir cupom? "/>
+                    <p:inputSwitch value="#{cadastroPedidoView.imprimir}"/>
+                </pm:field>
+            </h:form>
+        </pm:content>
+    </pm:page>
+
+    <!-- ////////////// Página para incluir um novo item - Seleção do tipo de produto ///// -->
+    <pm:page id="novo_item_tipo">
+        <pm:header title="Incluir Item" swatch="b">
+            <p:button value="Cancelar" icon="ui-icon-carat-l" outcome="pm:details"/>
+        </pm:header>
+
+        <pm:content>
+            <h:form prependId="false">
+                <pm:field>
+                    <p:outputLabel for="tipo_produto" value="Tipo de Produto"/>
+                    <p:dataList id="tipo_produto" value="#{cadastroPedidoView.tiposProdutos}"
+                            var="itemProdutoEnum" pt:data-inset="true">
+                        <p:column>
+                            <p:commandLink action="#{cadastroPedidoView.obterProdutos(itemProdutoEnum)}"
+                                    value="#{itemProdutoEnum.descricao}" update="novo_item_letra:letras"/>
+                        </p:column>
+                    </p:dataList>
+                </pm:field>
+            </h:form>
+        </pm:content>
+    </pm:page>
+
+    <!-- ////////////// Página para incluir um novo item - Seleção da letra ///// -->
+    <pm:page id="novo_item_letra">
+        <pm:header title="Incluir Item" swatch="b">
+            <p:button value="Voltar" icon="ui-icon-carat-l" outcome="pm:novo_item_tipo?transition=flip"/>
+            <p:button value="Cancelar" icon="ui-icon-delete" outcome="pm:details"/>
+        </pm:header>
+
+        <pm:content>
+            <h:form prependId="false">
+                <p:outputLabel for="letras" value="Letra inicial do produto"/>
+                <p:dataList id="letras" value="#{cadastroPedidoView.letras}" var="itemLetra" pt:data-inset="true">
+                    <p:commandLink value="#{itemLetra}" update="novo_item_produto:produtos"
+                            action="#{cadastroPedidoView.obterProdutosPorLetra(itemLetra)}"/>
+                </p:dataList>
+            </h:form>
+        </pm:content>
+    </pm:page>
+
+    <!-- ////////////// Página para incluir um novo item - Seleção da letra ///// -->
+    <pm:page id="novo_item_produto">
+        <pm:header title="Incluir Item" swatch="b">
+            <p:button value="Voltar" icon="ui-icon-carat-l" outcome="pm:novo_item_letra?transition=flip"/>
+            <p:button value="Cancelar" icon="ui-icon-delete" outcome="pm:details"/>
+        </pm:header>
+
+        <pm:content>
+            <h:form prependId="false">
+                <p:outputLabel for="produtos" value="Produto"/>
+                <p:dataList id="produtos" value="#{cadastroPedidoView.produtos}" var="itemProduto" pt:data-inset="true">
+                    <p:commandLink value="#{itemProduto.nome}" action="pm:novo_item_qtde?transition=flip"
+                            actionListener="#{cadastroPedidoView.novoItemPedido.setProduto(itemProduto)}"
+                            update="novo_item_qtde"/>
+                </p:dataList>
+            </h:form>
+        </pm:content>
+    </pm:page>
+
+    <!-- ////////////// Página para incluir um novo item - Seleção da letra ///// -->
+    <pm:page id="novo_item_qtde">
+        <pm:header title="Incluir Item" swatch="b">
+            <p:button value="Voltar" icon="ui-icon-carat-l" outcome="pm:novo_item_produto?transition=flip"/>
+            <p:button value="Cancelar" icon="ui-icon-delete" outcome="pm:details"/>
+        </pm:header>
+
+        <pm:content>
+            <p:messages id="itemMensagem"/>
+            <h:form prependId="false">
+                <p:outputLabel value="#{cadastroPedidoView.novoItemPedido.produto.nome}"/>
+                <pm:field>
+                    <p:outputLabel value="Quantidade"/>
+                    <p:inputNumber value="#{cadastroPedidoView.novoItemPedido.qtde}" converter="javax.faces.BigDecimal"
+                            decimalSeparator="," thousandSeparator="." decimalPlaces="3" label="Quantidade"/>
+                </pm:field>
+                <pm:field rendered="#{cadastroPedidoView.novoItemPedido.produto.tipo.descricao eq 'Massa'}">
+                    <p:outputLabel value="Molho"/>
+                    <p:selectOneMenu value="#{cadastroPedidoView.novoItemPedido.molho}">
+                        <f:selectItem itemLabel="Selecione" itemValue="" noSelectionOption="true"/>
+                        <f:selectItems value="#{cadastroPedidoView.molhos}" var="molho" itemLabel="#{molho.nome}"
+                                itemValue="#{molho}"/>
+                    </p:selectOneMenu>
+                </pm:field>
+                <pm:field>
+                    <p:outputLabel value="Observações"/>
+                    <p:inputTextarea type="textarea" maxlength="200"
+                            value="#{cadastroPedidoView.pedido.observacao}"/>
+                </pm:field>
+                <p:commandButton value="Incluir Item" icon="ui-icon-plus" action="#{cadastroPedidoView.incluirItem}"
+                        oncomplete="if (!args.validationFailed) PrimeFaces.Mobile.navigate('#novo_item_tipo', {});"
+                        update="novo_item_qtde:itemMensagem details"/>
+            </h:form>
+        </pm:content>
+    </pm:page>
+</h:body>
+</html>

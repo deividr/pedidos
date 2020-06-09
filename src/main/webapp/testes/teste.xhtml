@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pm="http://primefaces.org/mobile">
+<!--<f:view renderKitId="PRIMEFACES_MOBILE" />-->
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>
+        <ui:insert name="titulo">La Buonapasta</ui:insert>
+    </title>
+
+    <!-- Fonte para o nome da Empresa-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing+Script"/>
+
+    <!--Icones Awesome-->
+    <link rel="stylesheet"
+          href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"/>
+</h:head>
+
+<h:body>
+    <!--Lista de todos os usários cadastrados na base-->
+    <h:form>
+        <p:panel header="Incluir novo item">
+            <p:panelGrid columns="6" layout="grid" styleClass="ui-noborder"
+                         style="max-width: 800px"
+                         columnClasses="ui-grid-col-1, ui-grid-col-4,
+                                             ui-grid-col-1, ui-grid-col-3,
+                                             ui-grid-col-1, ui-grid-col-2">
+                <h:outputLabel value="Produto" for="produto"/>
+                <p:autoComplete id="produto" label="Produto" var="produto"
+                                value="#{cadastroPedidoView.novoItemPedido.produto}"
+                                itemLabel="#{produto.nome}" itemValue="#{produto}"
+                                forceSelection="true" converter="produtoConverter"
+                                completeMethod="#{cadastroPedidoView.obterProdutos}"/>
+
+                <h:outputLabel value="Molho" for="molho"/>
+                <p:selectOneMenu id="molho" label="Molho"
+                                 value="#{cadastroPedidoView.novoItemPedido.molho}">
+                    <f:selectItem itemLabel="Selecione" itemValue=""
+                                  noSelectionOption="true"/>
+                    <f:selectItems value="#{cadastroPedidoView.molhos}" var="molho"
+                                   itemLabel="#{molho.nome}" itemValue="#{molho}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Qtde." for="qtde"/>
+                <p:inputNumber id="qtde" label="Quantidade" decimalSeparator=","/>
+            </p:panelGrid>
+        </p:panel>
+    </h:form>
+</h:body>
+
+</html>

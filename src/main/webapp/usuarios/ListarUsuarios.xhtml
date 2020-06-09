@@ -1,0 +1,258 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="script">
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#menu_usuarios").addClass("is-selected");
+			});
+		
+			function handleInsertRequest(xhr, status, args, dialog) {
+				if (args.validationFailed) {
+					PF(dialog).jq.effect("shake", {
+						times : 5
+					}, 100);
+				} else {
+					PF(dialog).hide();
+					PF('usuarioTable').clearFilters();
+				}
+			}
+		</script>
+	</ui:define>
+
+	<ui:define name="content">
+		<h1 class="lb-page-title">
+			Lista de Usuários
+			<p:ajaxStatus style="float: right;">
+				<f:facet name="start">
+					<p:graphicImage library="imagens" name="loading.gif"
+						style="width: 40px;" />
+				</f:facet>
+			</p:ajaxStatus>
+		</h1>
+
+		<!--Toolbar principal-->
+		<h:form id="frmToolbar" prependId="false">
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="fa fa-plus"
+						onclick="PF('dlgNovoUsuario').show()" />
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<p:messages id="msgGeral" for="msgGeral" showDetail="true"
+				showSummary="false" closable="true" />
+		</h:form>
+
+		<br />
+
+		<!--Fomulário para Novo Usuário-->
+		<h:form id="frmNovoUsuario" prependId="false">
+			<p:dialog header="Novo Usuário" id="dlgNovoUsuario"
+				widgetVar="dlgNovoUsuario" modal="true" responsive="true"
+				resizable="false" closable="false"
+				style="min-width: 300px; margin: auto">
+
+				<f:facet name="header">
+					<h:outputLabel value="Novo Usuário" style="font-size: 1em" />
+					<p:ajaxStatus style="float: right; margin-left: 50px">
+						<f:facet name="start">
+							<p:graphicImage library="imagens" name="loading.gif"
+								style="width: 30px;" />
+						</f:facet>
+					</p:ajaxStatus>
+				</f:facet>
+
+				<p:messages showSummary="true" showDetail="false" autoUpdate="true"
+					closable="false" />
+
+				<div class="ui-fluid">
+					<p:panelGrid id="pnlNovoUsuario" columns="2" layout="grid"
+						styleClass="ui-noborder"
+						columnClasses="ui-grid-col-5, ui-grid-col-7">
+						<h:panelGroup>
+							<p:focus />
+							<h:outputLabel for="login" value="Login:" />
+						</h:panelGroup>
+						<p:inputText id="login" maxlength="15"
+							value="#{usuarioView.novoUsuario.login}" />
+
+						<h:outputLabel for="nome" value="Nome:" />
+						<p:inputText id="nome"
+							value="#{usuarioView.novoUsuario.nomeCompleto}" maxlength="40" />
+
+						<h:outputLabel for="tipoAcesso" value="Tipo de Acesso:" />
+						<p:selectOneMenu id="tipoAcesso"
+							value="#{usuarioView.novoUsuario.tipoAcesso}">
+							<f:selectItems var="tipoAcesso"
+								value="#{usuarioView.tiposDeAcesso}"
+								itemLabel="#{tipoAcesso.obterDescricao()}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel for="senha" value="Senha:" />
+						<p:password id="senha" value="#{usuarioView.novoUsuario.senha}" />
+
+						<h:outputLabel for="confirmarSenha" value="Confirmar Senha:" />
+						<p:password id="confirmarSenha"
+							value="#{usuarioView.confirmaSenha}"
+							requiredMessage="Confirme a senha digitada." />
+
+						<h:outputText />
+						<p:commandButton value="Incluir" icon="fa fa-plus"
+							action="#{usuarioView.incluirUsuario()}"
+							oncomplete="handleInsertRequest(xhr, status, args, 'dlgNovoUsuario')"
+							update="tblUsuarios pnlNovoUsuario msgGeral" />
+
+						<h:outputLabel />
+						<p:commandLink value="Cancelar"
+							style="float: right; margin-top: 10px;" process="@this"
+							update="frmNovoUsuario msgGeral" resetValues="true"
+							onclick="PF('dlgNovoUsuario').hide()" />
+					</p:panelGrid>
+				</div>
+			</p:dialog>
+		</h:form>
+
+		<!--Fomulário para Alterar Usuário-->
+		<h:form id="frmAlterarUsuario" prependId="false">
+			<p:dialog
+				header="Alterar Usuário #{usuarioView.selectedUsuario.nomeCompleto}"
+				id="dlgAlterarUsuario" widgetVar="dlgAlterarUsuario" modal="true"
+				responsive="true" resizable="false" closable="false"
+				style="max-width: 450px; min-width: 300px">
+
+				<f:facet name="header">
+					<h:outputLabel
+						value="Alterar Usuário #{usuarioView.selectedUsuario.nomeCompleto}"
+						style="font-size: 1em" />
+					<p:ajaxStatus style="float: right; margin-left: 50px">
+						<f:facet name="start">
+							<p:graphicImage library="imagens" name="loading.gif"
+								style="width: 30px;" />
+						</f:facet>
+					</p:ajaxStatus>
+				</f:facet>
+
+				<p:messages showSummary="true" showDetail="false" autoUpdate="true"
+					closable="false" />
+
+				<div class="ui-fluid">
+					<p:panelGrid id="pnlAlterarUsuario" columns="2"
+						styleClass="ui-noborder" layout="grid"
+						columnClasses="ui-grid-col-4, ui-grid-col-8">
+						<h:panelGroup>
+							<p:focus />
+							<h:outputLabel for="nomeAlter" value="Nome:" />
+						</h:panelGroup>
+						<p:inputText id="nomeAlter"
+							value="#{usuarioView.selectedUsuario.nomeCompleto}" />
+
+						<h:outputLabel for="tipoAcessoAlter" value="Tipo de Acesso:" />
+						<p:selectOneMenu id="tipoAcessoAlter"
+							value="#{usuarioView.selectedUsuario.tipoAcesso}" required="true">
+							<f:selectItems var="tipoAcessoAlter"
+								value="#{usuarioView.tiposDeAcesso}"
+								itemLabel="#{tipoAcessoAlter.obterDescricao()}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel for="ativoAlter" value="Ativo?" />
+						<p:selectBooleanCheckbox id="ativoAlter"
+							value="#{usuarioView.selectedUsuario.ativo}" />
+
+						<h:outputLabel />
+						<p:commandButton value="Salvar"
+							action="#{usuarioView.alterarUsuario()}"
+							oncomplete="handleInsertRequest(xhr, status, args,
+                                         'dlgAlterarUsuario')"
+							icon="fa fa-save" update="tblUsuarios pnlAlterarUsuario msgGeral" />
+
+						<h:outputLabel />
+						<p:commandLink value="Cancelar"
+							style="float: right; margin-top: 10px;" process="@this"
+							update="frmAlterarUsuario msgGeral" resetValues="true"
+							onclick="PF('dlgAlterarUsuario').hide()" />
+					</p:panelGrid>
+				</div>
+			</p:dialog>
+		</h:form>
+
+		<!--Lista de todos os usários cadastrados na base-->
+		<h:form id="frmLista" prependId="false">
+			<div class="fluid">
+				<p:dataTable id="tblUsuarios" var="usuario"
+					value="#{usuarioView.usuarios}" widgetVar="usuarioTable" rows="10"
+					paginator="true"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+                                {PageLinks} {NextPageLink} {LastPageLink}"
+					reflow="true"
+					rowStyleClass="#{usuario.ativo eq false ? 'lb-row-inativo' : ''}"
+					rowKey="#{usuario.userId}" emptyMessage="Nenhum usuário encontrado"
+					filteredValue="#{usuarioView.filteredUsuarios}"
+					sortBy="#{usuario.login}">
+
+					<f:facet name="header">
+						<p:outputPanel style="text-align: right">
+							<h:outputText value="Pesquisar: " />
+							<p:inputText id="globalFilter"
+								onkeyup="PF('usuarioTable').filter()" style="width:150px"
+								placeholder="Usuário" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:column headerText="Login" sortBy="#{usuario.login}"
+						filterMatchMode="contains" filterBy="#{usuario.login}"
+						filterStyle="display: none" width="100">
+						<h:outputText value="#{usuario.login}" />
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{usuario.nomeCompleto}"
+						filterMatchMode="contains" filterBy="#{usuario.nomeCompleto}"
+						filterStyle="display: none">
+						<h:outputText value="#{usuario.nomeCompleto}" />
+					</p:column>
+
+					<p:column headerText="Acesso" sortBy="#{usuario.tipoAcesso}"
+						filterStyle="display: none" width="150">
+						<h:outputText value="#{usuario.tipoAcesso.obterDescricao()}" />
+					</p:column>
+
+					<p:column width="75">
+						<p:commandButton icon="fa fa-pencil-square-o" process="@this"
+							oncomplete="PF('dlgAlterarUsuario').show()"
+							update="dlgAlterarUsuario" title="Editar">
+							<f:setPropertyActionListener value="#{usuario}"
+								target="#{usuarioView.selectedUsuario}" />
+						</p:commandButton>
+						<p:commandButton icon="fa fa-trash-o" process="@this"
+							oncomplete="PF('confirmarExclusao').show()"
+							update="confirmarExclusao" title="Excluir">
+							<f:setPropertyActionListener value="#{usuario}"
+								target="#{usuarioView.selectedUsuario}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</div>
+
+			<!--Dialog para confirmação da exclusão do usuário.-->
+			<p:confirmDialog id="confirmarExclusao" header="Exclusão de Usuário"
+				message="Tem certeza que deseja excluir o usuário
+                             #{usuarioView.selectedUsuario.nomeCompleto}?"
+				widgetVar="confirmarExclusao" closable="false" responsive="true">
+				<div align="right">
+					<p:commandButton value="Não" process="@this" update="msgGeral"
+						onclick="PF('confirmarExclusao').hide(); return false" />
+					<p:commandButton value="Sim" update="frmLista tblUsuarios msgGeral"
+						process="@this"
+						oncomplete="PF('confirmarExclusao').hide();
+                                     PF('usuarioTable').clearFilters()"
+						action="#{usuarioView.excluirUsuario()}" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

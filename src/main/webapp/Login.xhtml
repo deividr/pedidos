@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>La Buonapasta</title>
+
+    <!--Fonte para o nome da Empresa-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing+Script"/>
+
+    <!--Icones Awesome-->
+    <link rel="stylesheet"
+          href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"/>
+
+    <!--Bibliotecas CSS-->
+    <h:outputStylesheet library="css" name="custom.css"/>
+    <h:outputStylesheet library="css" name="w3.css"/>
+    
+</h:head>
+
+<h:body styleClass="fundo-canelone">
+    <f:metadata>
+        <f:event listener="#{loginView.preRender()}" type="preRenderView"/>
+    </f:metadata>
+
+    <header>
+        <!--Header La Buonapasta -->
+        <div class="w3-container w3-card-2 w3-green w3-hide-small" style="min-width: 460px">
+            <h5 class="w3-jumbo w3-center w3-text-white w3-text-shadow dancing w3-text">
+                <h:graphicImage library="imagens" name="brasao_login.png" width="60"/>
+                La Buonapasta
+            </h5>
+        </div>
+        <!--Header La Buonapasta em telas pequenas -->
+        <div class="w3-container w3-card-2 w3-green w3-hide-medium w3-hide-large"
+             style="min-width: 300px">
+            <h5 class="w3-xxlarge w3-center w3-text-white w3-text-shadow dancing w3-text">
+                <h:graphicImage library="imagens" name="brasao_login.png" width="60"/>
+                La Buonapasta
+            </h5>
+        </div>
+    </header>
+
+    <!-- Formulário de Login -->
+    <div class="w3-display-container" style="height: 350px;">
+        <div class="w3-card-12 w3-round-large w3-display-middle w3-white"
+             style="width:300px; box-sizing: border-box">
+            <h:form styleClass="w3-form" prependId="false">
+                <h3 class="w3-center"> Efetuar o login </h3>
+                <hr/>
+                <p>
+                    <h:inputText styleClass="w3-input icoPlaceholder" id="login"
+                                 value="#{loginView.login}" style="margin: auto">
+                        <f:passThroughAttribute name="placeholder" value="&#xf007; Usuário"/>
+                    </h:inputText>
+                </p>
+
+                <p>
+                    <h:inputSecret styleClass="w3-input icoPlaceholder" id="senha"
+                                   value="#{loginView.senha}">
+                        <f:passThroughAttribute name="placeholder" value="&#xf023; Password"/>
+                    </h:inputSecret>
+                </p>
+
+                <p:messages/>
+
+                <p>
+                    <h:commandButton styleClass="w3-btn-block w3-padding-12w3-ripple w3-green
+                        w3-hover-red" action="#{loginView.efetuarLogin}" value="Acessar"/>
+                </p>
+
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

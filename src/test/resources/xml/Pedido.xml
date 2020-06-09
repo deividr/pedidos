@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dataset>
+    <pedido cd_pedido   = "1"
+            nr_pedido   = "5000"
+            dt_retirada = "2019-06-09"
+            dt_pedido   = "2019-06-08"
+            cd_cliente  = "1000"
+            cd_usuario  = "1000" />
+</dataset>

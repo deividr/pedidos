@@ -1,0 +1,326 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="script">
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#menu_clientes").addClass("is-selected");
+			});
+
+			function handleInsertRequest(xhr, status, args, dialog) {
+				if (args.validationFailed) {
+					PF(dialog).jq.effect("shake", {
+						times : 5
+					}, 100);
+				} else {
+					PF(dialog).hide();
+					PF('tblClientes').clearFilters();
+				}
+			}
+		</script>
+	</ui:define>
+
+	<ui:define name="content">
+		<h1 class="lb-page-title">Cadastro de Clientes</h1>
+
+		<!--Toolbar principal-->
+		<h:form id="frmToolbar" prependId="false">
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="fa fa-plus"
+						onclick="PF('dlgNovoCliente').show()" />
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<p:messages id="msgGeral" for="msgGeral" showDetail="true"
+				showSummary="false" closable="true" />
+		</h:form>
+
+		<br />
+
+		<!--Fomulário para Novo Cliente-->
+		<h:form id="frmNovoCliente" prependId="false">
+			<p:dialog header="Novo Cliente" id="dlgNovoCliente"
+				widgetVar="dlgNovoCliente" modal="true" responsive="true"
+				resizable="false" closable="false" style="min-width: 300px">
+
+				<f:facet name="header">
+					<h:outputLabel value="Novo Cliente" style="font-size: 1em" />
+					<p:ajaxStatus style="float: right; margin-left: 50px">
+						<f:facet name="start">
+							<p:graphicImage library="imagens" name="loading.gif"
+								style="width: 30px;" />
+						</f:facet>
+					</p:ajaxStatus>
+				</f:facet>
+
+				<p:messages showSummary="true" showDetail="false" autoUpdate="true"
+					closable="false" />
+
+				<div class="ui-fluid">
+					<p:panelGrid id="pnlNovoCliente" columns="4" layout="grid"
+						styleClass="ui-noborder"
+						columnClasses="ui-sm-2, ui-sm-4, ui-sm-2, ui-sm-4">
+						<h:panelGroup>
+							<p:focus />
+							<h:outputLabel for="nome" value="Nome:" />
+						</h:panelGroup>
+						<p:inputText id="nome" label="Nome" maxlength="40"
+							value="#{clienteView.novoCliente.nome}" />
+
+						<h:outputLabel for="telefone1" value="Tel. Principal:" />
+						<p:inputMask id="telefone1" label="Telefone Principal"
+							converter="telefoneConverter" mask="(99) 9999-9999?9"
+							value="#{clienteView.novoCliente.telefone1}" />
+
+						<h:outputLabel for="telefone2" value="Tel. Secundário:" />
+						<p:inputMask id="telefone2" label="Telefone Secundário"
+							converter="telefoneConverter" mask="(99) 9999-9999?9"
+							value="#{clienteView.novoCliente.telefone2}" />
+
+						<h:outputLabel for="email" value="Email:" />
+						<p:inputText id="email" label="E-mail"
+							value="#{clienteView.novoCliente.email}" maxlength="50" />
+
+						<h:outputLabel value="CEP" for="cep" />
+						<p:inputMask id="cep" label="CEP" mask="99999-999"
+							style="max-width: 100px"
+							value="#{clienteView.novoCliente.enderecos.get(0).cep}">
+							<p:ajax event="change" process="@this"
+								listener="#{clienteView.obterCep('inclusao')}"
+								update="endereco numero complemento bairro cidade uf" />
+						</p:inputMask>
+
+						<h:outputLabel value="Endereço" for="endereco" />
+						<p:inputText id="endereco" label="Endereco"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.novoCliente.enderecos.get(0).logradouro}" />
+
+						<h:outputLabel value="Número" for="numero" />
+						<p:inputText id="numero" label="Numero" style="max-width: 80px"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.novoCliente.enderecos.get(0).numero}" />
+
+						<h:outputLabel value="Complemento" for="complemento" />
+						<p:inputText id="complemento" label="Complemento"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.novoCliente.enderecos.get(0).complemento}" />
+
+						<h:outputLabel value="Bairro" for="bairro" />
+						<p:inputText id="bairro" label="Bairro" style="max-width: 200px"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.novoCliente.enderecos.get(0).bairro}" />
+
+						<h:outputLabel value="Cidade" for="cidade" />
+						<p:inputText id="cidade" label="Cidade"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.novoCliente.enderecos.get(0).localidade}" />
+
+						<h:outputLabel value="UF" for="uf" />
+						<p:inputText id="uf" label="UF" style="max-width: 50px"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.novoCliente.enderecos.get(0).uf}" />
+					</p:panelGrid>
+
+					<h:outputLabel />
+					<p:commandButton value="Incluir" icon="fa fa-plus"
+						action="#{clienteView.incluirCliente()}"
+						oncomplete="handleInsertRequest(xhr, status, args, 'dlgNovoCliente')"
+						update="tblClientes pnlNovoCliente msgGeral" />
+
+					<h:outputLabel />
+					<p:commandLink value="Cancelar"
+						style="float: right; margin-top: 10px;" process="@this"
+						update="frmNovoCliente msgGeral" resetValues="true"
+						onclick="PF('dlgNovoCliente').hide()" />
+				</div>
+			</p:dialog>
+		</h:form>
+
+		<!--Fomulário para Alterar Cliente-->
+		<h:form id="frmAlterarCliente" prependId="false">
+			<p:dialog
+				header="Alterar Cliente #{clienteView.selectedCliente.nome}"
+				id="dlgAlterarCliente" widgetVar="dlgAlterarCliente" modal="true"
+				resizable="false" closable="false" responsive="true"
+				style="min-width: 300px; max-width: 450px">
+
+				<f:facet name="header">
+					<h:outputLabel
+						value="Alterar Cliente #{clienteView.selectedCliente.nome}"
+						style="font-size: 1em" />
+					<p:ajaxStatus style="float: right; margin-left: 50px">
+						<f:facet name="start">
+							<p:graphicImage library="imagens" name="loading.gif"
+								style="width: 30px;" />
+						</f:facet>
+					</p:ajaxStatus>
+				</f:facet>
+
+				<p:messages showSummary="true" showDetail="false" autoUpdate="true"
+					closable="false" />
+
+				<div class="ui-fluid">
+					<p:panelGrid id="pnlAlterarCliente" columns="4" layout="grid"
+						styleClass="ui-noborder"
+						columnClasses="ui-sm-2, ui-sm-4, ui-sm-2, ui-sm-4">
+
+						<h:panelGroup>
+							<p:focus />
+							<h:outputLabel for="alterNome" value="Nome:" />
+						</h:panelGroup>
+						<p:inputText id="alterNome" maxlength="40" label="Nome"
+							value="#{clienteView.selectedCliente.nome}" />
+
+						<h:outputLabel for="alterTelefone1" value="Tel. Principal:" />
+						<p:inputMask id="alterTelefone1" label="Telefone Principal"
+							converter="telefoneConverter" mask="(99) 9999-9999?9"
+							value="#{clienteView.selectedCliente.telefone1}" />
+
+						<h:outputLabel for="alterTelefone2" value="Tel. Secundário:" />
+						<p:inputMask id="alterTelefone2" label="Telefone Secundário"
+							converter="telefoneConverter" mask="(99) 9999-9999?9"
+							value="#{clienteView.selectedCliente.telefone2}" />
+
+						<h:outputLabel for="alterEmail" value="Email:" />
+						<p:inputText id="alterEmail" label="E-mail" maxlength="50"
+							value="#{clienteView.selectedCliente.email}" />
+
+						<h:outputLabel value="CEP" for="alterCep" />
+						<p:inputMask id="alterCep" label="CEP" mask="99999-999"
+							style="max-width: 100px"
+							value="#{clienteView.selectedCliente.enderecos.get(0).cep}">
+							<p:ajax event="change" process="@this"
+								listener="#{clienteView.obterCep('alteracao')}"
+								update="alterEndereco alterNumero alterComplemento alterBairro alterCidade alterUf" />
+						</p:inputMask>
+
+						<h:outputLabel value="Endereço" for="alterEndereco" />
+						<p:inputText id="alterEndereco" label="Endereco"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.selectedCliente.enderecos.get(0).logradouro}" />
+
+						<h:outputLabel value="Número" for="alterNumero" />
+						<p:inputText id="alterNumero" label="Numero"
+							style="max-width: 80px" onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.selectedCliente.enderecos.get(0).numero}" />
+
+						<h:outputLabel value="Complemento" for="alterComplemento" />
+						<p:inputText id="alterComplemento" label="Complemento"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.selectedCliente.enderecos.get(0).complemento}" />
+
+						<h:outputLabel value="Bairro" for="alterBairro" />
+						<p:inputText id="alterBairro" label="Bairro"
+							style="max-width: 200px" onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.selectedCliente.enderecos.get(0).bairro}" />
+
+						<h:outputLabel value="Cidade" for="alterCidade" />
+						<p:inputText id="alterCidade" label="Cidade"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.selectedCliente.enderecos.get(0).localidade}" />
+
+						<h:outputLabel value="UF" for="alterUf" />
+						<p:inputText id="alterUf" label="UF" style="max-width: 50px"
+							onkeyup="value=value.toUpperCase()"
+							value="#{clienteView.selectedCliente.enderecos.get(0).uf}" />
+					</p:panelGrid>
+
+					<h:outputLabel />
+					<p:commandButton value="Salvar" icon="fa fa-save"
+						action="#{clienteView.alterarCliente()}"
+						oncomplete="handleInsertRequest(xhr, status, args, 'dlgAlterarCliente')"
+						update="tblClientes pnlAlterarCliente msgGeral" />
+
+					<h:outputLabel />
+					<p:commandLink value="Cancelar"
+						style="float: right; margin-top: 10px;" process="@this"
+						action="#{clienteView.refreshCliente}"
+						update="tblClientes frmAlterarCliente msgGeral" resetValues="true"
+						onclick="PF('dlgAlterarCliente').hide()" />
+				</div>
+			</p:dialog>
+		</h:form>
+
+		<!--Lista de todos os usários cadastrados na base-->
+		<h:form id="frmLista" prependId="false">
+			<p:dataTable id="tblClientes" var="cliente"
+				value="#{clienteView.clientes}" reflow="true"
+				widgetVar="tblClientes" rows="10" paginator="true"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+                                            {PageLinks} {NextPageLink} {LastPageLink}"
+				rowKey="#{cliente.clieId}" emptyMessage="Nenhum cliente encontrado"
+				filteredValue="#{clienteView.filteredClientes}"
+				sortBy="#{cliente.nome}">
+
+				<f:facet name="header">
+					<p:outputPanel style="text-align: right">
+						<h:outputText value="Pesquisar: " />
+						<p:inputText id="globalFilter"
+							onkeyup="PF('tblClientes').filter()" style="width:150px"
+							placeholder="Cliente" />
+					</p:outputPanel>
+				</f:facet>
+
+				<p:column headerText="Nome" sortBy="#{cliente.nome}"
+					filterMatchMode="contains" filterBy="#{cliente.nome}"
+					filterStyle="display: none">
+					<h:outputText value="#{cliente.nome}" />
+				</p:column>
+
+				<p:column headerText="Telefone 1" sortBy="#{cliente.telefone1}"
+					filterMatchMode="contains" filterBy="#{cliente.telefone1}"
+					filterStyle="display: none" width="100">
+					<h:outputText value="#{cliente.telefone1}"
+						converter="telefoneConverter" />
+				</p:column>
+
+				<p:column headerText="Telefone 2" sortBy="#{cliente.telefone2}"
+					filterMatchMode="contains" filterBy="#{cliente.telefone2}"
+					filterStyle="display: none" width="100">
+					<h:outputText value="#{cliente.telefone2}"
+						converter="telefoneConverter" />
+				</p:column>
+
+				<p:column headerText="Email" sortBy="#{cliente.email}"
+					filterBy="#{cliente.email}" filterStyle="display: none" width="200">
+					<h:outputText value="#{cliente.email}" />
+				</p:column>
+
+				<p:column width="75">
+					<p:commandButton icon="fa fa-pencil-square-o" process="@this"
+						oncomplete="PF('dlgAlterarCliente').show()"
+						update="dlgAlterarCliente">
+						<f:setPropertyActionListener value="#{cliente}"
+							target="#{clienteView.selectedCliente}" />
+					</p:commandButton>
+					<p:commandButton icon="fa fa-trash-o" process="@this"
+						oncomplete="PF('confirmarExclusao').show()"
+						update="confirmarExclusao">
+						<f:setPropertyActionListener value="#{cliente}"
+							target="#{clienteView.selectedCliente}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<!--Dialog para confirmação da exclusão do cliente.-->
+			<p:confirmDialog id="confirmarExclusao" header="Exclusão de Cliente"
+				message="Confirma exclusão do cliente #{clienteView.selectedCliente.nome}?"
+				widgetVar="confirmarExclusao" closable="false">
+				<div align="right">
+					<p:commandButton value="Não" process="@this" update="msgGeral"
+						onclick="PF('confirmarExclusao').hide(); return false" />
+					<p:commandButton value="Sim" update="frmLista tblClientes msgGeral"
+						process="@this" action="#{clienteView.excluirCliente()}"
+						oncomplete="PF('confirmarExclusao').hide();
+                                     PF('tblClientes').clearFilters()" />
+				</div>
+			</p:confirmDialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

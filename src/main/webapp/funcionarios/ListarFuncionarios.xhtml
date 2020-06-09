@@ -1,0 +1,218 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="script">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#menu_funcionarios").addClass("is-selected");
+            });
+
+            function handleInsertRequest(xhr, status, args, dialog) {
+                if (args.validationFailed) {
+                    PF(dialog).jq.effect("shake", {
+                        times: 5
+                    }, 100);
+                } else {
+                    PF(dialog).hide();
+                    PF('funcionarioTable').clearFilters();
+                }
+            }
+        </script>
+    </ui:define>
+
+    <ui:define name="content">
+        <h1 class="lb-page-title">Cadastro de Funcionários</h1>
+
+        <!--Toolbar principal-->
+        <h:form id="frmToolbar" prependId="false">
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:commandButton value="Novo" icon="fa fa-plus"
+                                     onclick="PF('dlgNovoFuncionario').show()"/>
+                </f:facet>
+            </p:toolbar>
+            <br/>
+            <p:messages id="msgGeral" for="msgGeral" showDetail="true"
+                        showSummary="false" closable="true"/>
+        </h:form>
+
+        <br/>
+
+        <!--Fomulário para Novo Funcionário-->
+        <h:form id="frmNovoFuncionario" prependId="false">
+            <p:dialog header="Novo Funcionário" id="dlgNovoFuncionario"
+                      widgetVar="dlgNovoFuncionario" modal="true" responsive="true"
+                      resizable="false" closable="false" style="min-width: 300px">
+
+                <f:facet name="header">
+                    <h:outputLabel value="Novo Funcionário" style="font-size: 1em"/>
+                    <p:ajaxStatus style="float: right; margin-left: 50px">
+                        <f:facet name="start">
+                            <p:graphicImage library="imagens" name="loading.gif"
+                                            style="width: 30px;"/>
+                        </f:facet>
+                    </p:ajaxStatus>
+                </f:facet>
+
+                <p:messages showSummary="true" showDetail="false" autoUpdate="true"
+                            closable="false"/>
+
+                <div class="ui-fluid">
+                    <p:panelGrid id="pnlNovoFuncionario" columns="2" layout="grid"
+                                 columnClasses="ui-grid-col-3, ui-grid-col-9"
+                                 styleClass="ui-noborder">
+                        <h:panelGroup>
+                            <p:focus/>
+                            <p:outputLabel for="cpf" value="CPF:"/>
+                        </h:panelGroup>
+                        <p:inputMask id="cpf" maxlength="40" label="CPF" mask="999.999.999-99"
+                                     converter="cpfConverter"
+                                     value="#{funcionarioView.novoFuncionario.cpf}"/>
+
+                        <p:outputLabel for="nome" value="Nome:"/>
+                        <p:inputText id="nome" maxlength="45" label="Nome"
+                                     value="#{funcionarioView.novoFuncionario.nome}"/>
+
+                        <h:outputLabel/>
+                        <p:commandButton value="Incluir" icon="fa fa-plus"
+                                         action="#{funcionarioView.incluirFuncionario()}"
+                                         oncomplete="handleInsertRequest(xhr, status, args, 'dlgNovoFuncionario')"
+                                         update="tblFuncionarios pnlNovoFuncionario msgGeral"/>
+
+                        <h:outputLabel/>
+                        <p:commandLink value="Cancelar"
+                                       style="float: right; margin-top: 10px;" process="@this"
+                                       update="frmNovoFuncionario msgGeral" resetValues="true"
+                                       onclick="PF('dlgNovoFuncionario').hide()"/>
+                    </p:panelGrid>
+                </div>
+            </p:dialog>
+        </h:form>
+
+        <!--Fomulário para Alterar Funcionário-->
+        <h:form id="frmAlterarFuncionario" prependId="false">
+            <p:dialog
+                    header="Alterar Funcionário #{funcionarioView.selectedFuncionario.nome}"
+                    id="dlgAlterarFuncionario" widgetVar="dlgAlterarFuncionario" modal="true"
+                    resizable="false" closable="false" responsive="true"
+                    style="min-width: 300px; max-width: 450px">
+
+                <f:facet name="header">
+                    <h:outputLabel
+                            value="Alterar Funcionário #{funcionarioView.selectedFuncionario.nome}"
+                            style="font-size: 1em"/>
+                    <p:ajaxStatus style="float: right; margin-left: 50px">
+                        <f:facet name="start">
+                            <p:graphicImage library="imagens" name="loading.gif"
+                                            style="width: 30px;"/>
+                        </f:facet>
+                    </p:ajaxStatus>
+                </f:facet>
+
+                <p:messages showSummary="true" showDetail="false" autoUpdate="true"
+                            closable="false"/>
+
+                <div class="ui-fluid">
+                    <p:panelGrid id="pnlAlterarFuncionario" columns="2" layout="grid"
+                                 styleClass="ui-noborder"
+                                 columnClasses="ui-grid-col-3, ui-grid-col-9">
+
+                        <h:panelGroup>
+                            <p:focus/>
+                            <p:outputLabel for="alterCpf" value="CPF:"/>
+                        </h:panelGroup>
+                        <p:inputMask id="alterCpf" maxlength="45" label="CPF" disabled="true"
+                                     converter="cpfConverter" mask="999.999.999-99"
+                                     value="#{funcionarioView.selectedFuncionario.cpf}"/>
+
+                        <p:outputLabel for="alterNome" value="Nome:"/>
+                        <p:inputText id="alterNome" maxlength="45" label="Nome"
+                                     value="#{funcionarioView.selectedFuncionario.nome}"/>
+
+                        <p:outputLabel/>
+                        <p:commandButton value="Salvar" icon="fa fa-save"
+                                         action="#{funcionarioView.alterarFuncionario()}"
+                                         oncomplete="handleInsertRequest(xhr, status, args, 'dlgAlterarFuncionario')"
+                                         update="tblFuncionarios pnlAlterarFuncionario msgGeral"/>
+
+                        <p:outputLabel/>
+                        <p:commandLink value="Cancelar"
+                                       style="float: right; margin-top: 10px;" process="@this"
+                                       update="frmAlterarFuncionario msgGeral" resetValues="true"
+                                       onclick="PF('dlgAlterarFuncionario').hide()"/>
+
+                    </p:panelGrid>
+                </div>
+            </p:dialog>
+        </h:form>
+
+        <!--Lista de todos os Funcionários cadastrados na base-->
+        <h:form id="frmLista" prependId="false">
+            <p:dataTable id="tblFuncionarios" var="funcionario"
+                         value="#{funcionarioView.funcionarios}" reflow="true"
+                         widgetVar="funcionarioTable" rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+                                  	{PageLinks} {NextPageLink} {LastPageLink}"
+                         rowKey="#{funcionario.cpf}" emptyMessage="Nenhum funcionário encontrado"
+                         filteredValue="#{funcionarioView.filteredFuncionarios}"
+                         sortBy="#{funcionario.nome}">
+
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right">
+                        <h:outputText value="Pesquisar: "/>
+                        <p:inputText id="globalFilter"
+                                     onkeyup="PF('funcionarioTable').filter()" style="width:150px"
+                                     placeholder="Funcionario"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="CPF" sortBy="#{funcionario.cpf}"
+                          filterMatchMode="contains" filterBy="#{funcionario.cpf}"
+                          filterStyle="display: none">
+                    <h:outputText value="#{funcionario.cpf}" converter="cpfConverter"/>
+                </p:column>
+
+                <p:column headerText="Nome" sortBy="#{funcionario.nome}"
+                          filterMatchMode="contains" filterBy="#{funcionario.nome}"
+                          filterStyle="display: none">
+                    <h:outputText value="#{funcionario.nome}"/>
+                </p:column>
+
+                <p:column width="75">
+                    <p:commandButton icon="fa fa-pencil-square-o" process="@this"
+                                     oncomplete="PF('dlgAlterarFuncionario').show()"
+                                     update="dlgAlterarFuncionario">
+                        <f:setPropertyActionListener value="#{funcionario}"
+                                                     target="#{funcionarioView.selectedFuncionario}"/>
+                    </p:commandButton>
+                    <p:commandButton icon="fa fa-trash-o" process="@this"
+                                     oncomplete="PF('confirmarExclusao').show()"
+                                     update="confirmarExclusao">
+                        <f:setPropertyActionListener value="#{funcionario}"
+                                                     target="#{funcionarioView.selectedFuncionario}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <!--Dialog para confirmação da exclusão do funcionario.-->
+            <p:confirmDialog id="confirmarExclusao" header="Exclusão de Funcionario"
+                             message="Confirma exclusão do funcionario #{funcionarioView.selectedFuncionario.nome}?"
+                             widgetVar="confirmarExclusao" closable="false">
+                <div align="right">
+                    <p:commandButton value="Não" process="@this" update="msgGeral"
+                                     onclick="PF('confirmarExclusao').hide(); return false"/>
+                    <p:commandButton value="Sim" update="frmLista tblFuncionarios msgGeral"
+                                     process="@this"
+                                     action="#{funcionarioView.excluirFuncionario()}"
+                                     oncomplete="PF('confirmarExclusao').hide();
+                                     PF('funcionarioTable').clearFilters()"/>
+                </div>
+            </p:confirmDialog>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

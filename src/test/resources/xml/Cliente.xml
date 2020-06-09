@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dataset>
+    <cliente cd_cliente   = "1000"
+             nm_cliente   = "Cliente 1000"
+             ds_endereco  = "Avenida das Floras, 1170"
+             nr_telefone1 = "1136990990"
+             nr_telefone2 = "11996252415"
+             ds_email     = "cliente1@gmail.com"
+             dt_criacao   = "2017-03-31 10:10:10"/>
+</dataset>

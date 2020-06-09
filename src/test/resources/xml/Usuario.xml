@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dataset>
+    <usuario cd_usuario = "1000"
+             nm_login   = "exclVinculado"
+             nm_usuario = "Usuario com vinculo em outra tabela"
+             st_acesso  = "0"
+             ds_senha   = "çlkajsçldjfçlaksjdçfkajçsdkjflçaksjdf"
+             cd_ativo   = "1"/>
+
+    <usuario cd_usuario = "2000"
+             nm_login   = "exclSucesso"
+             nm_usuario = "Usuario para ser excluído"
+             st_acesso  = "0"
+             ds_senha   = "çlkajsçldjfçlaksjdçfkajçsdkjflçaksjdf"
+             cd_ativo   = "1"/>
+</dataset>

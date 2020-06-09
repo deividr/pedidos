@@ -1,0 +1,72 @@
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="content">
+        <h1 class="lb-page-title">
+            Alterar Senha
+            <p:ajaxStatus style="float: right;">
+                <f:facet name="start">
+                    <p:graphicImage library="imagens" name="loading.gif"
+                                    style="width: 40px;" />
+                </f:facet>
+            </p:ajaxStatus>
+        </h1>
+
+        <h:form prependId="false">
+
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:commandButton value="Salvar" icon="fa fa-save" process="@this"
+                                     onclick="PF('dlgConfirmaAlteracao').show()" />
+                </f:facet>
+            </p:toolbar>
+
+            <br />
+
+            <p:messages showDetail="true" showSummary="false" closable="true"
+                        autoUpdate="true" />
+
+            <br />
+
+            <div class="ui-fluid">
+                <p:panelGrid id="pnlAlterarSenha" columns="2" layout="grid"
+                             styleClass="ui-noborder" style="max-width: 300px"
+                             columnClasses="ui-grid-col-6, ui-grid-col-6">
+
+                    <h:panelGroup>
+                        <p:focus/>
+                        <p:outputLabel for="senhaAtual" value="Senha Atual:" />
+                    </h:panelGroup>
+                    <p:password id="senhaAtual" value="#{usuarioView.senhaAtual}"
+                                required="true" />
+
+                    <p:outputLabel for="senhaNova" value="Senha nova:" />
+                    <p:password id="senhaNova" value="#{usuarioView.senhaNova}"
+                                required="true" />
+
+                    <p:outputLabel for="confirmaSenha" value="Confirmar senha:" />
+                    <p:password id="confirmaSenha" value="#{usuarioView.confirmaSenha}"
+                                required="true" />
+                </p:panelGrid>
+            </div>
+
+            <!--Dialog para confirmação da exclusão do usuário.-->
+            <p:confirmDialog id="dlgConfirmaAlteracao"
+                             header="Alteração de Senha"
+                             message="Confirmar a alteração de senha?"
+                             widgetVar="dlgConfirmaAlteracao" closable="false" responsive="true">
+                <div align="right">
+                    <p:commandButton value="Não" process="@this"
+                                     onclick="PF('dlgConfirmaAlteracao').hide(); return false" />
+                    <p:commandButton value="Sim"
+                                     oncomplete="PF('dlgConfirmaAlteracao').hide()"
+                                     action="#{usuarioView.alterarSenha}" update="pnlAlterarSenha" />
+                </div>
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

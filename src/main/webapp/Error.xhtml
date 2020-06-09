@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>La Buonapasta</title>
+
+    <!-- Fonte para o nome da Empresa-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dancing+Script"/>
+
+    <!--Icones Awesome-->
+    <link rel="stylesheet"
+          href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+    <h:outputStylesheet library="css" name="custom.css"/>
+    <h:outputStylesheet library="css" name="layout.css"/>
+    <h:outputStylesheet library="css" name="components.css"/>
+
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+    <h:outputScript library="javascripts" name="app.js"/>
+</h:head>
+
+<h:body>
+    <header class="lb-topbar">
+        <table style="float: left;">
+            <tr>
+                <td>
+                    <h:graphicImage library="imagens" name="brasao_login.png" style="width: 30px"/>
+                </td>
+                <td>
+                    <h:outputLabel styleClass="lb-logo"> La Buonapasta </h:outputLabel>
+                </td>
+            </tr>
+        </table>
+    </header>
+    <section class="lb-content">
+        <h1 class="lb-page-title">
+            <span class="fa fa-2x fa-exclamation-triangle" style="color: rgb(255,0,0)"/>
+            Erro ao processar a sua requisição.
+        </h1>
+        <p>
+            Consulte o analista responsável para melhores esclarecimentos.
+        </p>
+    </section>
+</h:body>
+</html>

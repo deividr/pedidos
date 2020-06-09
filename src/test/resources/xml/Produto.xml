@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dataset>
+    <produto cd_produto       = "9000"
+             nm_produto       = "Massa de Teste"
+             st_unidade       = "KG"
+             vl_produto       = "32.00"
+             cd_tipo_produto  = "01"
+             cd_ativo         = "1" />
+             
+    <produto cd_produto       = "9001"
+             nm_produto       = "Molho de Teste"
+             st_unidade       = "KG"
+             vl_produto       = "25.00"
+             cd_tipo_produto  = "02"
+             cd_ativo         = "1" />
+
+    <produto cd_produto       = "9002"
+             nm_produto       = "Maionese"
+             st_unidade       = "KG"
+             vl_produto       = "31.00"
+             cd_tipo_produto  = "04"
+             cd_ativo         = "1" />
+   
+</dataset>

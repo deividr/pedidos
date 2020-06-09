@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <nav class="lb-menu">
+        <ul>
+            <li id="menu_home">
+                <h:link outcome="/Home">
+                    <i class="fa fa-lg fa-home"/>
+                    <span>Inicio</span>
+                </h:link>
+            </li>
+
+            <li id="menu_pedidos">
+                <h:link outcome="/pedidos/ListarPedidos">
+                    <i class="fa fa-lg fa-cart-arrow-down"/>
+                    <span>Pedidos</span>
+                </h:link>
+            </li>
+
+            <li id="menu_consumos">
+                <h:link outcome="/funcionarios/ListarConsumos"
+                        rendered="#{seguranca.isPerfilAdministrador()}">
+                    <i class="fa fa-lg fa-calculator"/>
+                    <span>Consumos</span>
+                </h:link>
+            </li>
+
+            <li id="menu_produtos">
+                <h:link outcome="/produtos/ListarProdutos"
+                        rendered="#{seguranca.isPerfilCadastro()}">
+                    <i class="fa fa-lg fa-shopping-basket"/>
+                    <span>Produtos</span>
+                </h:link>
+            </li>
+
+            <li id="menu_clientes">
+                <h:link outcome="/clientes/ListarClientes"
+                        rendered="#{seguranca.isPerfilCadastro()}">
+                    <i class="fa fa-lg fa-address-book"/>
+                    <span>Clientes</span>
+                </h:link>
+            </li>
+
+            <li id="menu_funcionarios">
+                <h:link outcome="/funcionarios/ListarFuncionarios"
+                        rendered="#{seguranca.isPerfilAdministrador()}">
+                    <i class="fa fa-lg fa-user"/>
+                    <span>Funcionários</span>
+                </h:link>
+            </li>
+
+            <li id="menu_usuarios">
+                <h:link outcome="/usuarios/ListarUsuarios"
+                        rendered="#{seguranca.isPerfilAdministrador()}">
+                    <i class="fa fa-lg fa-group"/>
+                    <span>Usuarios</span>
+                </h:link>
+            </li>
+        </ul>
+    </nav>
+
+</ui:composition>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dataset>
+	<item_pedido cd_pedido     = "1"
+	             cd_produto    = "9000"
+	             cd_molho      = "9001"
+	             vl_quantidade = "2.500" />
+
+	<item_pedido cd_pedido     = "1"
+	             cd_produto    = "9002"
+	             vl_quantidade = "2.500" />	            
+</dataset>
