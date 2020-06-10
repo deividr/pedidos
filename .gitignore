@@ -6,3 +6,5 @@
 /.project
 /pedidos.iml
 /.vscode
+/Procfile
+/.factorypath
