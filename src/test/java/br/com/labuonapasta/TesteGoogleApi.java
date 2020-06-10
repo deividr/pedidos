@@ -16,24 +16,24 @@ public class TesteGoogleApi {
 
 	@Test
 	public void main() throws IOException, JAXBException {
-		GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyDIa-0lzOBxDH0Qg_bkNn5llVSg4LdgJ4E").build();
+		GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyDIa-0lzOBxDH0Qg_paoisjpdoifjpoaijs").build();
 
 		String[] origins = new String[1];
 		origins[0] = "Avenida Santo Antônio, 2504 - Vila Osasco, Osasco - SP";
 
 		String[] destinations = new String[1];
-		destinations[0] = "asdfasdfa asdf asdf asdf asdfasdf, 100 - asdfasdf asdf , asdf asdf  - asdfasdf";
+		destinations[0] = "Avenida Flora, 1170 - Bussocaba, Osasco - SP";
 
 		DistanceMatrixApiRequest request = DistanceMatrixApi.newRequest(context);
 
 		request = request.origins(origins).destinations(destinations);
 
 		try {
-			DistanceMatrix result = request.await();			
+			DistanceMatrix result = request.await();
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			System.out.println(gson.toJson(result));
 			System.out.println(result.rows[0].elements[0]);
-			context.shutdown();			
+			context.shutdown();
 		} catch (InterruptedException | ApiException e) {
 			e.printStackTrace();
 		}
