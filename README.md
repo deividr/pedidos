@@ -3,13 +3,7 @@
   <h1> Ordering Manager </h1>
 </div>
 
-Restaurant ordering manager and other functions like:
-
-1. Register products
-2. Register customer
-3. Register employess
-4. Register users
-5. Register employee purchases
+Restaurant ordering manager and other functions like register of products, customer, employess, users and employee purchase.
 
 # 📸 Screenshots
 
@@ -18,3 +12,33 @@ Restaurant ordering manager and other functions like:
 ![web_home](.github/assets/pedidos_home.jpg)
 ![web_home](.github/assets/pedidos_novo.jpg)
 ![web_home](.github/assets/pedidos_feito.jpg)
+
+# Project structure
+
+This is a fullstack project developed with the technologies below.
+
+## 🛠️ Technologies
+
+These are the technologies used throughout the project:
+
+- [Java][java]
+- [JSF](jsf)
+- [PrimeFaces](primefaces)
+- [MySql](mysql)
+- [Google Distance Matrix API](apimatrix)
+- [Via CEP](viacep) - API for consulting CEP
+
+# 📝 License
+
+This project is under the MIT license. See the [LICENSE](LICENSE) for more information.
+
+[java]: https://www.java.com/pt_BR/
+[jsf]: https://pt.wikipedia.org/wiki/JavaServer_Faces
+[primfaces]: https://www.primefaces.org/showcase/
+[mysql]: https://www.mysql.com/
+[apimatrix]: https://developers.google.com/maps/documentation/distance-matrix/start
+[viacep]: https://viacep.com.br/
+
+---
+
+For more about [me:crown:](https://www.linkedin.com/in/deivid-assump%C3%A7%C3%A3o-rodrigues-a36a5685/).
